@@ -10,6 +10,7 @@ class Player(arcade.Sprite):
         self.health_bar = HealthBar(game, position = (self.center_x, self.center_y-50))
         self.health_bar.fullness = self.health/self.max_health
     def update(self):
+
         """ Move the player """
         # Move player.
         # Remove these lines if physics engine is moving player.
@@ -17,6 +18,7 @@ class Player(arcade.Sprite):
         self.center_y += self.change_y
 
         self.health_bar.position = self.center_x, self.center_y-50
+        self.health_bar.fullness = self.health/self.max_health
 
         # Check for out-of-bounds
         if self.left < 0:
@@ -28,3 +30,6 @@ class Player(arcade.Sprite):
             self.bottom = 0
         elif self.top > SCREEN_HEIGHT - 1:
             self.top = SCREEN_HEIGHT - 1
+
+    def destroy(self, game):
+        game.End()

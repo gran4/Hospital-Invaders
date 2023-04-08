@@ -264,6 +264,8 @@ class MyGame(arcade.Window):
             enemy.focused_on = building
         elif num == bias2:
             enemy.focused_on = person
+        elif num == bias3:
+            enemy.focused_on = player
             
         if len(path) > 1:
             path.pop(0)
@@ -389,6 +391,8 @@ class MyGame(arcade.Window):
     def generateWorld(self, x_line, y_line):
         self.graph = LivingMap(x_line, y_line, x_line*y_line, tilesize=16)
         self.graphlength = x_line+1
+    def End(self):
+        pass
 
 def main():
     """ Main function """

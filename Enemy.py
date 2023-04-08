@@ -46,7 +46,7 @@ class BaseEnemy(arcade.Sprite):
         self.update_movement(game, delta_time)
     #NOTE: Always call on_update in update
     def on_update(self, game, delta_time):
-
+        self.health_bar.fullness = self.health/self.max_health
         if self.state == "Attack":
             self.state = "Idle"
         if self.focused_on:
