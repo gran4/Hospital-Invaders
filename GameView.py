@@ -76,6 +76,7 @@ class MyGame(arcade.Window):
 
         # Draw all the sprites.
         self.player_list.draw()
+        self.Enemies.draw()
 
         # Call draw() on all your sprite lists below
     def update_player_speed(self):
