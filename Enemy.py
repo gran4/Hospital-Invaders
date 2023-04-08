@@ -1,8 +1,8 @@
 import arcade, random
-
+from Components import *
 
 class BaseEnemy(arcade.Sprite):
-    def __init__(self, file_name:str, x:float, y:float, health:float, damage:float, range:int, scale:float=1):
+    def __init__(self, game, file_name:str, x:float, y:float, health:float, damage:float, range:int, scale:float=1):
         super().__init__(file_name, center_x=x, center_y=y, scale=scale)
         self.texture = arcade.load_texture(file_name)
         self.center_x = x
@@ -22,6 +22,9 @@ class BaseEnemy(arcade.Sprite):
         self.rotation = 0
         self.next_time = .1
 
+        self.max_health = health
+        self.health_bar = HealthBar(game, position = (self.center_x, self.center_y-50))
+        self.health_bar.fullness = self.health/self.max_health
     def destroy(self, game):
         self.remove_from_sprite_lists()
         self.health = -100
@@ -67,6 +70,7 @@ class BaseEnemy(arcade.Sprite):
             pos = self.get_path()
             if pos is not None:
                 self.position = pos
+                self.health_bar.position = self.center_x, self.center_y-50
             self.path_timer -= self.next_time
             #self.next_time = difficulty[game["map"][round(self.center_x/50)][round(self.center_y/50)]]
     def on_attack(self, game, delta_time):
@@ -96,7 +100,7 @@ class BaseEnemy(arcade.Sprite):
 
 class Enemy_Slinger(BaseEnemy):
     def __init__(self, game, x, y, difficulty=1):
-        super().__init__("resources/Sprites/enemy.png", x, y, 5*difficulty, 10*difficulty, 500, scale=1)
+        super().__init__(game, "resources/Sprites/enemy.png", x, y, 5*difficulty, 10*difficulty, 50, scale=1)
         self.texture = arcade.load_texture("resources/Sprites/enemy.png", flipped_horizontally=True)
 
         self.movelist = [0]
