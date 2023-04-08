@@ -119,10 +119,11 @@ class MyGame(arcade.Window):
                     print(x2)
                     print(y2)
                     tmaptemp = self.tmap[x2][y2]
-                    temp_object = map_det[tmaptemp]
-                    temp_object.center_x = x1
-                    temp_object.center_y = y1
-                    temp_object.draw()
+                    if not(self.tmap[x2][y2] == None):
+                        temp_object = map_det[tmaptemp]
+                        temp_object.center_x = x1
+                        temp_object.center_y = y1
+                        temp_object.draw()
 
         # Call draw() on all your sprite lists below
 
