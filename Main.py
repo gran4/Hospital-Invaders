@@ -19,7 +19,7 @@ SCREEN_TITLE = "Starting Template"
 Player_Texture = ":resources:images/animated_characters/female_person/femalePerson_idle.png"
 
 CHARACTER_SCALING = 1
-TILE_SCALING = 0.5
+TILE_SCALING = .75
 COIN_SCALING = 0.5
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
@@ -107,17 +107,22 @@ class MyGame(arcade.Window):
                         self.playery - self.height / 2)
         self.camera_sprites.move_to(position, 1)
 
-        for x in range(int(self.width / self.tilesize)+2):
-            for y in range(int(self.height / self.tilesize)+2):
+        for x in range(int(self.width / self.tilesize)):
+            for y in range(int(self.height / self.tilesize)):
                 x1 = x*self.tilesize + round(self.playerx / self.tilesize) * self.tilesize - self.width / 2
                 y1 = y*self.tilesize + round(self.playery / self.tilesize) * self.tilesize - self.height / 2
                 x2 = x + round(self.playerx / self.tilesize)
                 y2 = y + round(self.playery / self.tilesize)
-                tmaptemp = self.tmap[0][0]
-                temp_object = map_det[tmaptemp]
-                temp_object.center_x = 0
-                temp_object.center_y = 0
-                temp_object.draw()
+                print(x2)
+                print(y2)
+                if not(x2 < 0 or y2 < 0 or x2 > len(self.tmap) - 1 or y2 > len(self.tmap[0]) -1):
+                    print(x2)
+                    print(y2)
+                    tmaptemp = self.tmap[x2][y2]
+                    temp_object = map_det[tmaptemp]
+                    temp_object.center_x = x1
+                    temp_object.center_y = y1
+                    temp_object.draw()
 
         # Call draw() on all your sprite lists below
 

@@ -1,5 +1,5 @@
 
 
 mapper = [
-    ['grass']
+    ['grass', 'grass', 'grass']
 ]
