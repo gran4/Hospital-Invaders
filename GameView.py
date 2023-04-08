@@ -10,6 +10,7 @@ python -m arcade.examples.starting_template
 import arcade
 from player import *
 from Enemy import *
+from MyPathfinding import *
 
 SCREEN_WIDTH = 1440
 SCREEN_HEIGHT = 800
@@ -19,6 +20,9 @@ MOVEMENT_SPEED = 5
 
 SIZE_X = 5000
 SIZE_Y = 5000
+
+TILE_SCALING = 1
+
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -49,15 +53,23 @@ class MyGame(arcade.Window):
         self.down_pressed = False
 
 
+        self.People = arcade.SpriteList()
+        self.Buildings = arcade.SpriteList()
+
         self.Enemies = arcade.SpriteList()
-        self.OpenToEnemies = []
+        self.OpenToEnemies = [(0, 0)]
         self.EnemyMap = {}
+
+        self.health_bars = arcade.SpriteList()
+
+        self.hardness_multiplier = 1
 
         # Set the background color
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
         """ Set up the game and initialize the variables. """
+        self.generateWorld(1600, 1600)
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
@@ -69,8 +81,11 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = 50
         self.player_list.append(self.player_sprite)
 
-        enemy = Enemy_Slinger(self, 234, 654)
-        self.Enemies.append(enemy)
+        #enemy = Enemy_Slinger(self, 234, 654)
+        enemy = self.spawn_enemy()
+
+
+
     def on_draw(self):
         """ Render the screen. """
 
@@ -82,6 +97,8 @@ class MyGame(arcade.Window):
 
         # Call draw() on all your sprite lists below
         self.Enemies.draw()
+
+        self.health_bars.draw()
     def update_player_speed(self):
 
         # Calculate speed based on the keys pressed
@@ -104,6 +121,7 @@ class MyGame(arcade.Window):
         need it.
         """
         self.player_list.update()
+        [enemy.update(self, delta_time) for enemy in self.Enemies]
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
@@ -154,6 +172,141 @@ class MyGame(arcade.Window):
         Called when a user releases a mouse button.
         """
         pass
+
+
+    def check_sprite_with_enemies(self, obj):
+        for enemy in self.Enemies:
+            dist_to_object = arcade.get_distance_between_sprites(enemy, obj)
+            if dist_to_object > 1500:
+                continue
+            if enemy.focused_on:
+                dist_to_orig = arcade.get_distance_between_sprites(enemy, enemy.focused_on)
+            else:
+                dist_to_orig = 0
+            if dist_to_object < dist_to_orig:
+                enemy.focuse_on = obj
+                self.calculate_enemy_path(enemy)
+    def spawn_enemy(self):
+        x, y = self.EnemySpawnPos()
+        enemy_pick = random.choice(["Enemy Slinger"])
+        #while not self.unlocked[enemy_pick]:
+        #    enemy_pick = random.choice(["Basic Enemy", "Privateer", "Enemy Swordsman", "Enemy Archer", "Enemy Arsonist", "Enemy Wizard"])
+        enemy_class = {"Enemy Slinger":Enemy_Slinger}[enemy_pick]
+        enemy = enemy_class(self, x, y, difficulty=self.hardness_multiplier)
+        enemy.focused_on = None
+        
+
+        max_i = 100
+        if len(self.OpenToEnemies) == 0:
+            max_i = 1
+        i = 0
+        while not self.graph[x/50][y/50] in enemy.movelist:
+            pos = self.EnemySpawnPos()
+            if pos is not None:
+                x, y = pos
+            i += 1
+            if i >= max_i:
+                enemy.destroy(self)
+                enemy_pick = random.choice(["Enemy Slinger"])
+                #while not self.unlocked[enemy_pick]:
+                #    enemy_pick = random.choice(["Basic Enemy", "Privateer", "Enemy Swordsman", "Enemy Archer", "Enemy Arsonist", "Enemy Wizard"])
+                enemy_class = {"Enemy Slinger":Enemy_Slinger}[enemy_pick]
+                enemy = enemy_class(self, x, y, difficulty=self.hardness_multiplier)
+                enemy.focused_on = None
+                i = 0
+
+
+
+        enemy.center_x = x
+        enemy.center_y = y
+        
+        self.calculate_enemy_path(enemy)
+        enemy.check = True
+        self.Enemies.append(enemy)
+        
+        #for person in self.People:
+        #    person.check = True
+
+    def calculate_enemy_path(self, enemy):
+        enemy.check = False
+        enemy.path = []
+        #return 
+        building, distance = arcade.get_closest_sprite(enemy, self.Buildings)
+        person, distance2 = arcade.get_closest_sprite(enemy, self.People)
+        player, distance3 = self.player_sprite, arcade.get_distance_between_sprites(enemy, self.player_sprite)
+
+        
+        bias1 = (distance+5)*enemy.building_bias
+        bias2 = (distance2+5)*enemy.people_bias
+        bias3 = (distance3+5)*enemy.player_bias
+
+        if distance > 1500:
+            bias1 = float("inf")
+        if distance2 > 1500:
+            bias2 = float("inf")     
+        if distance3 > 1500:
+            bias2 = float("inf")          
+
+        if bias1 == float("inf") and bias2  == float("inf") and bias3 == float("inf"):
+            return
+
+        num = min(bias1, bias2, bias3)
+        if num == bias1:
+            obj2 = building
+        elif num == bias2:
+            obj2 = person
+        elif num == bias3:
+            obj2 = player
+
+        path = AStarSearch(self.graph, enemy.position, obj2.position, allow_diagonal_movement=True, movelist=enemy.movelist, min_dist=enemy.range)
+        if not path:
+            pass
+        elif arcade.get_distance_between_sprites(enemy, obj2) > enemy.range:        
+            pass
+        if num == bias1:
+            enemy.focused_on = building
+        elif num == bias2:
+            enemy.focused_on = person
+            
+        if len(path) > 1:
+            path.pop(0)
+            enemy.path = path
+            enemy.check = True
+            enemy.idle = False
+        elif len(path) == 1:
+            enemy.path = path
+            enemy.check = True
+            enemy.idle = False
+        else:
+            enemy.check = False
+    def calculate_path(self, obj, SpriteList, max_distance=1500):
+        if len(SpriteList) == 0:
+            return
+        obj.check = False
+        obj.path = []
+        #return 
+        
+        obj2, distance = arcade.get_closest_sprite(obj, SpriteList)
+        if obj2 == [] or distance > max_distance:
+            return
+
+
+        path = AStarSearch(self.graph, obj.position, obj2.position, allow_diagonal_movement=True, movelist=obj.movelist, min_dist=obj.range)
+        if path or arcade.get_distance_between_sprites(obj, obj2) <= obj.range: 
+            obj.focused_on = obj2
+            
+        if len(path) > 1:
+            path.pop(0)
+            obj.path = path
+            obj.check = True
+            obj.idle = False
+        elif len(path) == 1:
+            obj.path = path
+            obj.check = True
+            obj.idle = False
+        else:
+            obj.check = False
+    
 
     def generateEnemySpawner(self, width, length):
 
@@ -236,7 +389,9 @@ class MyGame(arcade.Window):
                     land[0].texture = arcade.load_texture("resources/Sprites/Snow.png")
                  """
 
-
+    def generateWorld(self, x_line, y_line):
+        self.graph = LivingMap(x_line, y_line, x_line*y_line, tilesize=16)
+        self.graphlength = x_line+1
 
 def main():
     """ Main function """

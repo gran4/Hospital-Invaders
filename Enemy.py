@@ -1,4 +1,4 @@
-import arcade, random, os
+import arcade, random
 
 
 class BaseEnemy(arcade.Sprite):
@@ -20,7 +20,7 @@ class BaseEnemy(arcade.Sprite):
 
         self.check = True
         self.rotation = 0
-        self.next_time = 1
+        self.next_time = .1
 
     def destroy(self, game):
         self.remove_from_sprite_lists()
@@ -98,4 +98,10 @@ class Enemy_Slinger(BaseEnemy):
     def __init__(self, game, x, y, difficulty=1):
         super().__init__("resources/Sprites/enemy.png", x, y, 5*difficulty, 10*difficulty, 500, scale=1)
         self.texture = arcade.load_texture("resources/Sprites/enemy.png", flipped_horizontally=True)
+
+        self.movelist = [0]
+        self.people_bias = 1
+        self.building_bias = 1
+        self.player_bias = 1
+    
     
