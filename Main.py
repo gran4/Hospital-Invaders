@@ -113,11 +113,8 @@ class MyGame(arcade.Window):
                 y1 = y*self.tilesize + round(self.playery / self.tilesize) * self.tilesize - self.height / 2
                 x2 = x + round(self.playerx / self.tilesize)
                 y2 = y + round(self.playery / self.tilesize)
-                print(x2)
-                print(y2)
+
                 if not(x2 < 0 or y2 < 0 or x2 > len(self.tmap) - 1 or y2 > len(self.tmap[0]) -1):
-                    print(x2)
-                    print(y2)
                     tmaptemp = self.tmap[x2][y2]
                     if not(self.tmap[x2][y2] == None):
                         temp_object = map_det[tmaptemp]
