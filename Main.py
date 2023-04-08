@@ -49,8 +49,9 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
 
         # Set up the player
-        self.player_sprite = Player(Player_Texture,
-                                    SPRITE_SCALING)
+        self.health_bars = arcade.SpriteList()
+        
+        self.player_sprite = Player(self, Player_Texture, 200, 300, scale= SPRITE_SCALING)
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 50
         self.player_list.append(self.player_sprite)

@@ -41,7 +41,6 @@ class LivingMap(object):
     def __setitem__(self, x, y, val):
         self.graph[x][y] = val
 
-
 def heuristic(start:tuple, goal:tuple):
         """
 
