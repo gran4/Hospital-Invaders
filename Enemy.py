@@ -1,6 +1,5 @@
 import arcade, random, os
 
-print(os.getcwd())
 
 class BaseEnemy(arcade.Sprite):
     def __init__(self, file_name:str, x:float, y:float, health:float, damage:float, range:int, scale:float=1):
@@ -20,7 +19,6 @@ class BaseEnemy(arcade.Sprite):
         self.path_timer = 0
 
         self.check = True
-        self.create_statemachene()
         self.rotation = 0
         self.next_time = 1
 
@@ -100,3 +98,4 @@ class Enemy_Slinger(BaseEnemy):
     def __init__(self, game, x, y, difficulty=1):
         super().__init__("resources/Sprites/enemy.png", x, y, 5*difficulty, 10*difficulty, 500, scale=1)
         self.texture = arcade.load_texture("resources/Sprites/enemy.png", flipped_horizontally=True)
+    
