@@ -9,12 +9,33 @@ python -m arcade.examples.starting_template
 """
 import arcade
 from player import *
-
+from pyglet.math import Vec2
+from map_det import *
+from map_phy import *
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 Player_Texture = ":resources:images/animated_characters/female_person/femalePerson_idle.png"
+
+CHARACTER_SCALING = 1
+TILE_SCALING = 0.5
+COIN_SCALING = 0.5
+SPRITE_PIXEL_SIZE = 128
+GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * TILE_SCALING)
+
+# Movement speed of player, in pixels per frame
+PLAYER_MOVEMENT_SPEED = 10
+GRAVITY = 1
+PLAYER_JUMP_SPEED = 20
+
+# How many pixels to keep as a minimum margin between the character
+# and the edge of the screen.
+LEFT_VIEWPORT_MARGIN = 250
+RIGHT_VIEWPORT_MARGIN = 250
+BOTTOM_VIEWPORT_MARGIN = 100
+TOP_VIEWPORT_MARGIN = 100
+TILE_SPRITE_SCALING = 25
 
 class MyGame(arcade.Window):
     """
@@ -29,7 +50,7 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
 
         self.player_list = None
-
+        self.tile_map = None
         # Set up the player info
         self.player_sprite = None
 
@@ -56,6 +77,18 @@ class MyGame(arcade.Window):
         self.player_list.append(self.player_sprite)
 
 
+
+        self.view_bottom = 0
+
+        self.tmap = mapper
+        self.tilesize = 75
+        self.playerx = 0
+        self.playery = 0
+        self.camera_sprites = arcade.Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.camera_gui = arcade.Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.player_speed = 10
+        self.test = [0, 0]
+
     def on_draw(self):
         """
         Render the screen.
@@ -67,6 +100,24 @@ class MyGame(arcade.Window):
 
         # Draw all the sprites.
         self.player_list.draw()
+
+        self.camera_sprites.use()
+
+        position = Vec2(self.playerx - self.width / 2,
+                        self.playery - self.height / 2)
+        self.camera_sprites.move_to(position, 1)
+
+        for x in range(int(self.width / self.tilesize)+2):
+            for y in range(int(self.height / self.tilesize)+2):
+                x1 = x*self.tilesize + round(self.playerx / self.tilesize) * self.tilesize - self.width / 2
+                y1 = y*self.tilesize + round(self.playery / self.tilesize) * self.tilesize - self.height / 2
+                x2 = x + round(self.playerx / self.tilesize)
+                y2 = y + round(self.playery / self.tilesize)
+                tmaptemp = self.tmap[0][0]
+                temp_object = map_det[tmaptemp]
+                temp_object.center_x = 0
+                temp_object.center_y = 0
+                temp_object.draw()
 
         # Call draw() on all your sprite lists below
 
