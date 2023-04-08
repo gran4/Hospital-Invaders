@@ -1,4 +1,4 @@
-import arcade
+import arcade, atexit
 from StartMenu import *
 from GameView import *
 
