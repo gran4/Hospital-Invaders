@@ -14,9 +14,9 @@ ui_obj_info = {"Buildings":["Factory"],
 
 #for Placing
 unlocked = {None:False, "Factory":False}
-objects = {"Factory":Factory}
+objects = {"Factory": Factory}
 requirements = {"Factory":{"metal":5}}
-tiles = {"Factory":Land}
+tiles = {"Factory": Land}
 times = {"Factory":20}
 max_people = {"Factory":2}
 
