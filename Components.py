@@ -130,73 +130,7 @@ class HealthBar:
 
             # Make sure full_box is to the left of the bar instead of the middle
             self.full_box.left = self._center_x - (self._box_width // 2)
-            
-class CustomTextSprite(object):
-     def __init__(
-         self, 
-         text: str, 
-         chracter_textures: dict, 
-         scale: float = 1, 
-         center_x: float = 0, 
-         center_y: float = 0, 
-         text_scale:float = 1, 
-         text_margin:float= 16, 
-         width: int = 100, 
-         height: int = 40,  
-         Background_offset_x: float = 0,
-         Background_offset_y: float = 0, 
-         Background_scale: float = 1, 
-         Background_Texture: Optional[str] = None
-     ) -> None:
-         super().__init__()
-         self.Sprite_List: arcade.SpriteList = arcade.SpriteList()
-         self.Background_Sprite: arcade.Sprite = arcade.Sprite(Background_Texture, center_x=center_x+width/2+Background_offset_x, center_y=center_y-height*2+Background_offset_y, scale=Background_scale)
 
-         self.text_scale: float = text_scale
-         self.width: int = width
-         self.height: int = height
-         self.update_text(text, 
-                 chracter_textures, 
-                 scale=scale, 
-                 text_scale=text_scale,
-                 center_x=center_x, 
-                 center_y=center_y, 
-                 text_margin=text_margin, 
-                 width=width, 
-                 height = height)
-
-
-     def update_text(self, 
-                 text: str, 
-                 chracter_textures: dict, 
-                 scale: float = 1, 
-                 text_scale: float = 1,
-                 center_x: float = 0, 
-                 center_y: float = 0, 
-                 text_margin: float = 16, 
-                 width: float = 100, 
-                 ) -> None:
-         self.text: str = text
-         self.Sprite_List.clear()
-         if not text:
-             return
-         words: list[str] = text.split(' ')
-         x: float = center_y
-         y: float = center_x
-         for word in words:
-             if x > width/2+center_x or word == "\n":
-                 y -= text_margin
-                 x = -width/2
-             if not word: 
-                 x += text_margin*scale
-                 continue
-             for char in word:
-                 sprite: arcade.Sprite = arcade.Sprite(center_x=center_x+x, center_y=center_y+y, scale=scale*text_scale)
-                 sprite.texture: arcade.Texture = chracter_textures[string]
-                 self.Sprite_List.append(sprite)
-                 x += text_margin*scale
-             x += text_margin*scale
-            
 class CustomUIFlatButton(arcade.gui.UIInteractiveWidget):
     """
     A text button, with support for background color and a border.

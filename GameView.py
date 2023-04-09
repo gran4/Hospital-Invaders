@@ -50,12 +50,13 @@ class MyGame(arcade.View):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+        self.hospital = arcade.Sprite(filename="hospital.png", center_x=1440, center_y=800, scale=2)
 
 
 
          # Set the background color
         arcade.set_background_color(arcade.color.AMAZON)
-        self.population = 0
+        self.population = 2000
 
         self.generate_world()
 
@@ -92,9 +93,10 @@ class MyGame(arcade.View):
 
         # Clear the screen
         arcade.start_render()
+        self.camera.use()
 
-        # Draw all the sprites.
-        self.player_list.draw()
+        self.hospital.draw()
+        self.Buildings.draw()
 
         # Call draw() on all your sprite lists below
         self.Enemies.draw()
@@ -121,6 +123,8 @@ class MyGame(arcade.View):
         Normally, you'll call update() on the sprite lists that
         need it.
         """
+
+        #print(delta_time)
         self.player_list.update()
         [enemy.update(self, delta_time) for enemy in self.Enemies]
 

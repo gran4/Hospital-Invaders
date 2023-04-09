@@ -70,6 +70,8 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
 
         # Set up the player
+        self.hospatial = arcade.Sprite(filename="hospital.png", center_x=214, center_y=250, scale=.5)
+
         self.player_sprite = Player(Player_Texture,
                                     SPRITE_SCALING)
         self.player_sprite.center_x = 50
@@ -97,7 +99,7 @@ class MyGame(arcade.Window):
         # This command should happen before we start drawing. It will clear
         # the screen to the background color, and erase what we drew last frame.
         self.clear()
-
+        self.hospatial.draw()
         # Draw all the sprites.
         self.player_list.draw()
 

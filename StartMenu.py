@@ -11,6 +11,8 @@ class StartMenu(arcade.View):
         self.uimanager = arcade.gui.UIManager()
         self.uimanager.enable()
 
+        self.test = arcade.create_text_image("Havoc Hospital", arcade.csscolor.DARK_RED, font="")
+
         textures = arcade.load_spritesheet("resources/gui/Wooden Font.png", 14, 24, 12, 70, margin=1)
         self.Alphabet_Textures = {" ":None}
         string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz.:,%/-+_"
@@ -18,10 +20,10 @@ class StartMenu(arcade.View):
             self.Alphabet_Textures[string[i]] = textures[i]
 
 
-        main_button = CustomUIFlatButton(self.Alphabet_Textures, click_sound = None, text="Menus", width=140, height=50, x=0, y=0, text_offset_x = 16, text_offset_y=35, offset_x=75, offset_y=25)
+        main_button = CustomUIFlatButton(self.Alphabet_Textures, click_sound = None, text="Start", width=140, height=50, x=0, y=0, text_offset_x = 16, text_offset_y=35, offset_x=75, offset_y=25)
         main_button.on_click = self.Start
         wrapper = arcade.gui.UIAnchorWidget(anchor_x="right", anchor_y="top",
-                child=main_button, align_x=-500, align_y=0)
+                child=main_button, align_x=-600, align_y=-400)
         main_button.wrapper = wrapper
         self.uimanager.add(wrapper)
     def on_draw(self):

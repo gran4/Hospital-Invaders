@@ -32,16 +32,16 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
 
         arcade.set_background_color(arcade.color.AMAZON)
-        self.hospatial = arcade.Sprite(filename="hospital.png", center_x=214, center_y=250, scale=.5)
+        self.hospatial = arcade.Sprite(filename="map.png", center_x=160, center_y=160, scale=.5)
         # If you have sprite lists, you should create them here,
         # and set them to None
 
         #27x32
 
         self.mapper = []
-        for x in range(27):
+        for x in range(20):
             self.mapper.append([])
-            for y in range(32):
+            for y in range(20):
                 self.mapper[x].append(0)
 
 
@@ -63,7 +63,7 @@ class MyGame(arcade.Window):
         for x in range(len(self.mapper)):
             for y in range(len(self.mapper[0])):
                 if self.mapper[x][y] == 1:
-                    arcade.draw_rectangle_filled(x*16,y*16, 16, 16, (255, 0, 0))
+                    arcade.draw_rectangle_filled(x*16 + 8,y*16 + 8, 16, 16, (255, 0, 0))
 
 
         # Call draw() on all your sprite lists below
@@ -112,10 +112,10 @@ class MyGame(arcade.Window):
         """
         Called when the user presses a mouse button.
         """
-        if self.mapper[round((x)/16)][round(y/16)] == 0:
-            self.mapper[round((x)/16)][round(y/16)] = 1
-        elif self.mapper[round((x)/16)][round(y/16)] == 1:
-            self.mapper[round((x)/16)][round(y/16)] = 0
+        if self.mapper[round((x)/16 -.5)][round(y/16 -.5)] == 0:
+            self.mapper[round((x)/16 -.5)][round(y/16 -.5)] = 1
+        elif self.mapper[round((x)/16 -.5)][round(y/16 -.5)] == 1:
+            self.mapper[round((x)/16 -.5)][round(y/16 -.5)] = 0
 
     def on_mouse_release(self, x, y, button, key_modifiers):
         """
