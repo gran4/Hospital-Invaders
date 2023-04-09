@@ -68,7 +68,7 @@ class BaseEnemy(arcade.Sprite):
     def update_movement(self, game, delta_time):
         self.path_timer += delta_time
         if self.path_timer > self.next_time and len(self.path) > 0:
-            self.position = movetowards(self.position, self.path[0], delta_time*1000)
+            self.position = movetowards(self.position, self.path[0], delta_time)
 
             pos = self.get_path()
             if pos is not None:
