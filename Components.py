@@ -17,6 +17,17 @@ from typing import Optional, Union
 import pyglet.media as media
 
 
+def movetowards(start, end, step_size):
+    dx = end[0] - start[0]
+    dy = end[1] - start[1]
+    distance = math.sqrt(dx ** 2 + dy ** 2)
+    if distance <= step_size:
+        return end
+    else:
+        x = start[0] + dx / distance * step_size
+        y = start[1] + dy / distance * step_size
+        return (x, y)
+        
 class HealthBar:
     """
     Represents a bar which can display information about a sprite.
@@ -129,3 +140,245 @@ class HealthBar:
 
             # Make sure full_box is to the left of the bar instead of the middle
             self.full_box.left = self._center_x - (self._box_width // 2)
+
+class CustomUIFlatButton(arcade.gui.UIInteractiveWidget):
+    """
+    A text button, with support for background color and a border.
+
+    :param float x: x coordinate of bottom left
+    :param float y: y coordinate of bottom left
+    :param float width: width of widget. Defaults to texture width if not specified.
+    :param float height: height of widget. Defaults to texture height if not specified.
+    :param str text: text to add to the button.
+    :param style: Used to style the button
+
+    """
+
+    def __init__(self, 
+                 Alphabet_Textures,
+                 center_x: float = 0,
+                 center_y: float = 0,
+                 width: float = 100,
+                 height: float = 60,
+                 scale=1,
+                 text="",
+                 size_hint=None,
+                 size_hint_min=None,
+                 size_hint_max=None,
+                 style=None, 
+                 text_offset_x=0, text_offset_y = 0, 
+                 text_scale=1, text_margin=16,  
+                 offset_x=0, offset_y=0, 
+                 line_spacing = 20,
+                 Texture="resources/gui/Wood Button.png", Hovered_Texture="resources/gui/Wood Button.png", Pressed_Texture="resources/gui/Wood Button Pressed.png", 
+                 click_sound = None,
+                 **kwargs):
+        super().__init__(center_x, center_y, width, height,
+                         size_hint=size_hint,
+                         size_hint_min=size_hint_min,
+                         size_hint_max=size_hint_max)
+        self.click_sound = click_sound
+        self.clicked = False
+
+        self._text = text
+        self._style = style or {}
+        
+#image_width=width+50, image_height=height+50       image_width=width+607, image_height=height+303, 
+        self.sprite = arcade.Sprite(filename=Texture, scale=scale, center_x=center_x+offset_x, center_y=center_x+offset_y)#arcade.load_texture(Texture)
+        self.hovered_sprite = arcade.Sprite(filename=Hovered_Texture, scale=scale, center_x=center_x+offset_x, center_y=center_x+offset_y)#arcade.load_texture(Hovered_Texture)
+        self.pressed_sprite = arcade.Sprite(filename=Pressed_Texture, scale=scale, center_x=center_x+offset_x, center_y=center_x+offset_y)#arcade.load_texture(Pressed_Texture)
+
+        #game.spritelist.append(self.sprite)
+        #game.spritelist.append(self.hovered_sprite)
+        #game.spritelist.append(self.pressed_sprite)
+
+        self.text_sprites = arcade.SpriteList()
+        """
+        if self.text:
+            pos_x = -45+text_offset_x
+            pos_y = 5+text_offset_y
+            if len(text)*text_scale*text_margin > width:
+                pos_y += 10
+            for string in text:
+                sprite = arcade.Sprite(center_x=x+offset_x+pos_x, center_y=y+offset_y+pos_y, scale=text_scale)
+                sprite.texture = Alphabet_Textures[string]
+                self.text_sprites.append(sprite)
+                pos_x += text_margin
+                if pos_x*text_scale > width-90:
+                    pos_x = -45+text_offset_x
+                    pos_y -= 24
+        """
+        """
+        self.text_sprites.clear()
+        if not text:
+            return
+        words = text.split(' ')
+        x = text_offset_x
+        y = text_offset_y
+        for word in words:
+            if x > width-90+x:
+                y -= text_margin+text_offset_y
+                x = text_offset_x
+            for string in word:
+                sprite = arcade.Sprite(center_x=center_x+x, center_y=center_y+y, scale=text_scale)
+                sprite.texture = Alphabet_Textures[string]
+                self.text_sprites.append(sprite)
+                x += text_margin
+            x += text_margin
+        """
+
+        self.line_spacing = line_spacing
+        self.text_offset_x=text_offset_x
+        self.text_offset_y = text_offset_y 
+        self.text_scale=text_scale
+        self.text_margin=text_margin
+        self.offset_x=offset_x
+        self.offset_y=offset_y
+
+        
+        self.set_text(text, Alphabet_Textures)
+        self.scale(1.2)
+
+    def do_render(self, surface: arcade.gui.Surface):
+        self.prepare_render(surface)
+        if self.pressed:
+            self.pressed_sprite.draw()
+            if self.click_sound and not self.clicked: 
+                self.click_sound.play()
+                self.clicked = True
+        elif self.hovered:
+            self.clicked = False
+            self.hovered_sprite.draw()
+        else:
+            self.clicked = False
+            self.sprite.draw()
+        if self.text:
+            self.text_sprites.draw()
+
+            return
+            font_name = self._style.get("font_name", ("calibri", "arial"))
+            font_size = self._style.get("font_size", 15)
+            font_color = self._style.get("font_color", arcade.color.WHITE)
+            border_width = self._style.get("border_width", 2)
+
+            start_x = self.width // 2
+            start_y = self.height // 2
+
+            text_margin = 2
+            arcade.draw_text(
+                text=self.text,
+                start_x=start_x,
+                start_y=start_y,
+                font_name=font_name,
+                font_size=font_size,
+                color=font_color,
+                align="center",
+                anchor_x='center', anchor_y='center',
+                width=self.width - 2 * border_width - 2 * text_margin
+            )
+    def do_render2(self, surface: arcade.gui.Surface):
+        self.prepare_render(surface)
+
+        # Render button
+        font_name = self._style.get("font_name", ("calibri", "arial"))
+        font_size = self._style.get("font_size", 15)
+        font_color = self._style.get("font_color", arcade.color.WHITE)
+        border_width = self._style.get("border_width", 2)
+        border_color = self._style.get("border_color", None)
+        bg_color = self._style.get("bg_color", (21, 19, 21))
+
+        if self.pressed:
+            bg_color = self._style.get("bg_color_pressed", arcade.color.WHITE)
+            border_color = self._style.get("border_color_pressed", arcade.color.WHITE)
+            font_color = self._style.get("font_color_pressed", arcade.color.BLACK)
+        elif self.hovered:
+            border_color = self._style.get("border_color_pressed", arcade.color.WHITE)
+
+        # render BG
+        if bg_color:
+            arcade.draw_xywh_rectangle_filled(0, 0, self.width, self.height, color=bg_color)
+
+        # render border
+        if border_color and border_width:
+            arcade.draw_xywh_rectangle_outline(
+                border_width,
+                border_width,
+                self.width - 2 * border_width,
+                self.height - 2 * border_width,
+                color=border_color,
+                border_width=border_width)
+
+        # render text
+        if self.text:
+            start_x = self.width // 2
+            start_y = self.height // 2
+
+            text_margin = 2
+            arcade.draw_text(
+                text=self.text,
+                start_x=start_x,
+                start_y=start_y,
+                font_name=font_name,
+                font_size=font_size,
+                color=font_color,
+                align="center",
+                anchor_x='center', anchor_y='center',
+                width=self.width - 2 * border_width - 2 * text_margin
+            )
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        text = value
+        self._text = value
+        self.trigger_render()
+
+
+
+    def set_text(self, text, Alphabet_Textures):
+        self.text_sprites.clear()
+        #self.text_scale = 1
+        if not text:
+            return 
+        words = text.split(" ")
+        pos_x = -45+self.text_offset_x
+        pos_y = 5+self.text_offset_y
+
+        if len(text)*self.text_scale*self.text_margin > self.width:
+            pos_y += 10
+        line_num_of_characters = 0
+        for word in words:
+            spaces = len(word)
+            spaces *= self.text_margin
+            if pos_x+len(word)*self.text_scale*14+self.text_margin > self.width-30:
+                pos_x = -45+self.text_offset_x
+                pos_y -= 24
+
+            
+            for character in word:
+                #self.offset_y+pos_y
+                sprite = arcade.Sprite(center_x=self.offset_x+pos_x, center_y=-self.offset_y/2+pos_y, scale=self.text_scale)
+                sprite.texture = Alphabet_Textures[character]
+                self.text_sprites.append(sprite)
+                pos_x += self.text_margin
+            pos_x += self.text_margin
+            line_num_of_characters = len(word)
+            
+        return
+        if self.text:
+            pos_x = -45+self.text_offset_x
+            pos_y = 5+self.text_offset_y
+            if len(text)*self.text_scale*self.text_margin > self.width:
+                pos_y += 10
+            for string in text:
+                #self.offset_y+pos_y
+                sprite = arcade.Sprite(center_x=self.offset_x+pos_x, center_y=-self.offset_y/2+pos_y, scale=self.text_scale)
+                sprite.texture = Alphabet_Textures[string]
+                self.text_sprites.append(sprite)
+                pos_x += self.text_margin
+                if pos_x*self.text_scale > self.width-90:
+                    pos_x = -45+self.text_offset_x
+                    pos_y -= 24

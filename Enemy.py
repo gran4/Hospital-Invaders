@@ -1,6 +1,7 @@
 import arcade, random
 from Components import *
 
+
 class BaseEnemy(arcade.Sprite):
     def __init__(self, game, file_name:str, x:float, y:float, health:float, damage:float, range:int, scale:float=1):
         super().__init__(file_name, center_x=x, center_y=y, scale=scale)
@@ -66,7 +67,9 @@ class BaseEnemy(arcade.Sprite):
         return True
     def update_movement(self, game, delta_time):
         self.path_timer += delta_time
-        if self.path_timer > self.next_time:
+        if self.path_timer > self.next_time and len(self.path) > 0:
+            self.position = movetowards(self.position, self.path[0], delta_time*1000)
+
             pos = self.get_path()
             if pos is not None:
                 self.position = pos

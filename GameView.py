@@ -23,7 +23,7 @@ SIZE_Y = 5000
 
 TILE_SCALING = 1
 
-class MyGame(arcade.Window):
+class MyGame(arcade.View):
     """
     Main application class.
 
@@ -32,13 +32,14 @@ class MyGame(arcade.Window):
     with your own code. Don't leave 'pass' in this program.
     """
 
-    def __init__(self, width, height, title):
+    def __init__(self, menu, width, height, title):
         """
         Initializer
         """
-
         # Call the parent class initializer
-        super().__init__(width, height, title)
+        super().__init__()
+
+        self.menu = menu
 
         # Variables that will hold sprite lists
         self.player_list = None
@@ -66,6 +67,10 @@ class MyGame(arcade.Window):
 
         # Set the background color
         arcade.set_background_color(arcade.color.AMAZON)
+
+        self.uimanager = arcade.gui.UIManager()
+        self.uimanager.enable()
+        self.setup()
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -392,12 +397,16 @@ class MyGame(arcade.Window):
         self.graph = LivingMap(x_line, y_line, x_line*y_line, tilesize=16)
         self.graphlength = x_line+1
     def End(self):
-        pass
+        window = arcade.get_window()
+        self.uimanager.disable()
+        self.menu.uimanager.enable()
+        self.window.show_view(self.menu)
 
 def main():
     """ Main function """
-    game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    game.setup()
+    window = arcade.Window(1440, 900, "Havoc Hospital", resizable=True)
+    game = MyGame(None, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    window.show_view(game)
     arcade.run()
 
 

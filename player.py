@@ -1,5 +1,11 @@
 import arcade
+from Components import *
 from GameView import *
+
+SCREEN_WIDTH = 1440
+SCREEN_HEIGHT = 800
+SPRITE_SCALING = 0.5
+MOVEMENT_SPEED = 5
 
 class Player(arcade.Sprite):
     def __init__(self, game, filename, x, y, scale=1):
